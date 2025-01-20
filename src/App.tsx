@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { fetchRepositories } from './Api';
-import './App.css';
-import { List, Button, Space, Input, Typography, Spin, Alert } from 'antd';
+import React, { useEffect, useState } from "react";
+import { fetchRepositories } from "./Api";
+import "./App.css";
+import { List, Button, Space, Input, Typography, Spin, Alert } from "antd";
 
 const { Title } = Typography;
 
@@ -18,10 +18,8 @@ const App: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
 
-  // Новые состояния для редактирования
-  const [editIndex, setEditIndex] = useState<number | null>(null); // Индекс редактируемого репозитория
-  const [editValue, setEditValue] = useState<string>(''); // Значение для редактирования
-
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [editValue, setEditValue] = useState<string>("");
 
   useEffect(() => {
     const loadRepositories = async () => {
@@ -30,7 +28,7 @@ const App: React.FC = () => {
         const repositories = await fetchRepositories(page);
         setRepos((prev) => [...prev, ...repositories]);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Неизвестная ошибка');
+        setError(err instanceof Error ? err.message : "Неизвестная ошибка");
       } finally {
         setLoading(false);
       }
@@ -45,43 +43,39 @@ const App: React.FC = () => {
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
 
-      // Проверяем, достиг ли пользователь конца страницы
       if (scrollY + windowHeight >= documentHeight - 100 && !loading) {
         setPage((prev) => prev + 1);
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, [loading]);
 
-   // Функция для начала редактирования репозитория
-   const handleEdit = (index: number) => {
+  const handleEdit = (index: number) => {
     setEditIndex(index);
-    setEditValue(repos[index].name); // Устанавливаем текущее значение для редактирования
+    setEditValue(repos[index].name);
   };
 
-  // Функция для сохранения изменений
   const saveEdit = () => {
     if (editIndex !== null) {
       const updatedRepos = [...repos];
-      updatedRepos[editIndex].name = editValue; // Обновляем название репозитория
-      setRepos(updatedRepos); // Обновляем состояние
-      setEditIndex(null); // Сбрасываем индекс редактируемого элемента
-      setEditValue(''); // Сбрасываем значение
+      updatedRepos[editIndex].name = editValue;
+      setRepos(updatedRepos);
+      setEditIndex(null);
+      setEditValue("");
     }
   };
 
-  // Функция для удаления репозитория
   const deleteRepo = (index: number) => {
-    const updatedRepos = repos.filter((_, i) => i !== index); // Удаляем репозиторий по индексу
-    setRepos(updatedRepos); // Обновляем состояние
+    const updatedRepos = repos.filter((_, i) => i !== index);
+    setRepos(updatedRepos);
   };
 
   return (
-    <div className="App" style={{ padding: '20px' }}> 
+    <div className="App" style={{ padding: "20px" }}>
       <Title level={1}>Репозитории JavaScript</Title>
       {error && <Alert message={error} type="error" />}
       <List
@@ -90,25 +84,36 @@ const App: React.FC = () => {
         renderItem={(repo, index) => (
           <List.Item key={repo.id}>
             {editIndex === index ? (
-            <>
-              <Input
-                type="text"
-                value={editValue} // Поле ввода для редактирования
-                onChange={(e) => setEditValue(e.target.value)} // Обновляем значение редактируемого репозитория
-              />
-              <Button onClick={saveEdit}>Сохранить</Button> {/* Кнопка для сохранения изменений */}
-            </>
-          ) : (
-            <>
-            <a href={repo.html_url} target="_blank" rel="noopener noreferrer">
-              {repo.name}
-            </a>
-            <Space>
-            <Button onClick={() => handleEdit(index)}>Редактировать</Button> {/* Кнопка для редактирования */}
-              <Button onClick={() => deleteRepo(index)}>Удалить</Button> {/* Кнопка для удаления репозитория */}
-              </Space>
-            </>
-          )}
+              <>
+                <Input
+                  type="text"
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                />
+                <Button onClick={saveEdit}>Сохранить</Button>{" "}
+                {/* Кнопка для сохранения изменений */}
+              </>
+            ) : (
+              <>
+                <a
+                  href={repo.html_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {repo.name}
+                </a>
+                <Space>
+                  <Button onClick={() => handleEdit(index)}>
+                    Редактировать
+                  </Button>{" "}
+                  {/* Кнопка для редактирования */}
+                  <Button onClick={() => deleteRepo(index)}>
+                    Удалить
+                  </Button>{" "}
+                  {/* Кнопка для удаления репозитория */}
+                </Space>
+              </>
+            )}
           </List.Item>
         )}
       />
